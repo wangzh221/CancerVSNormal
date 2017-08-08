@@ -1,0 +1,27 @@
+import numpy as np
+from astropy.table import Table
+from sklearn.ensemble import RandomForestClassifier
+import matplotlib.pyplot as plt
+
+x_train = np.loadtxt('X.dat')
+y_train = np.loadtxt('Y.dat')
+x_test = np.loadtxt('Xtest.dat')
+y_test = np.loadtxt('Ytest.dat')
+
+trainerror = []
+testerror = []
+k_trees = [3, 10, 30, 100, 300]
+for k in k_trees:
+    clf = RandomForestClassifier(n_estimators = k)
+    clf = clf.fit(x_train, y_train)
+    trainerror.append(sum(abs(clf.predict(x_train) != y_train)) / len(y_train))
+    testerror.append(sum(abs(clf.predict(x_test) != y_test)) / len(y_test))
+
+print(Table([k_trees, trainerror, testerror], names=('Tree', 'Train Error', 'Test Error')))
+plt.plot(k_trees, trainerror, 'or-', label = 'Train', linewidth = 2)
+plt.plot(k_trees, testerror, 'ob-', label = 'Test', linewidth = 2)
+plt.xlabel('K Trees')
+plt.ylabel('Error')
+plt.axis([0, 301, 0.0, 0.5])
+plt.legend()
+plt.show()
