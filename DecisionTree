@@ -1,0 +1,29 @@
+import numpy as np
+from astropy.table import Table
+from sklearn import tree
+import matplotlib.pyplot as plt
+
+x_train = np.loadtxt('X.dat')
+y_train = np.loadtxt('Y.dat')
+x_test = np.loadtxt('Xtest.dat')
+y_test = np.loadtxt('Ytest.dat')
+
+trainerror = np.zeros(12)
+testerror = np.zeros(12)
+k_trees = [3, 10, 30, 100, 300]
+for i in range(12):
+    clf = tree.DecisionTreeClassifier(criterion = 'entropy', max_depth = i+1)
+    clf = clf.fit(x_train, y_train)
+    trainerror[i] = sum(abs(clf.predict(x_train) != y_train)) / len(y_train)
+    testerror[i] = sum(abs(clf.predict(x_test) != y_test)) / len(y_test)
+
+treedepth = range(1, 13)
+print(Table([treedepth, trainerror], names = ('Tree Depth', 'Train Error')))
+print(Table([treedepth, testerror], names = ('Tree Depth', 'Test Error')))
+plt.plot(range(1,13), trainerror, 'b', label = 'Train')
+plt.plot(range(1,13), testerror, 'r', label = 'Test')
+plt.xlabel('treedepth')
+plt.ylabel('error')
+plt.axis(xmin = 1, ymax = 0.5)
+plt.legend(loc=0)
+plt.show()
